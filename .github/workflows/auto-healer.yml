@@ -1,0 +1,56 @@
+name: 🤖 Auto-Healer
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install Railway
+        run: npm install -g @railway/cli
+      
+      - name: Get Railway Logs
+        id: get_logs
+        continue-on-error: true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway login --token $RAILWAY_TOKEN
+          railway logs --service ultimate-oracle-bot --limit 30 > logs.txt || echo "No logs" > logs.txt
+          cat logs.txt
+      
+      - name: Run Auto-Fix
+        id: fix
+        run: |
+          if [ -s logs.txt ]; then
+            python auto_healer/fix.py < logs.txt
+            echo "fixed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No logs to analyze"
+            echo "fixed=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and Push
+        if: steps.fix.outputs.fixed == 'true'
+        run: |
+          git config --global user.name "Auto-Healer"
+          git config --global user.email "healer@eye.com"
+          git add requirements.txt
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🛠 Auto-fix: add missing modules [skip ci]"
+            git push
+          fi

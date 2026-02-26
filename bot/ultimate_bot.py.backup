@@ -1,0 +1,1045 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+𓂀 EYE OF HORUS - THE COMPLETE LIVING ORACLE 𓂀
+نسخه نهایی با تمام قابلیت‌ها - هیچ چیزی ساده نشده
+Created by: Al Hashash
+Version: ∞
+"""
+
+import logging
+import asyncio
+import os
+import sys
+import json
+import time
+import random
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+import hashlib
+
+# ==================== تلگرام ====================
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    Application, CommandHandler, MessageHandler, 
+    filters, ContextTypes, CallbackQueryHandler, ConversationHandler
+)
+from telegram.error import Conflict, TimedOut, NetworkError
+
+# ==================== مسیرها ====================
+sys.path.append(str(Path(__file__).parent.parent))
+
+# ==================== مغز متفکر ====================
+from brain.master_mind import master_mind, MASTER_ID
+from brain.knowledge_engine import knowledge_engine
+from brain.dream_engine import dream_engine
+from brain.memory_core import memory_core
+from brain.learning_engine import learning_engine
+from brain.api_requester import api_requester
+
+# ==================== پنل مدیریت ====================
+from admin.master_panel import master_panel
+
+# ==================== گزارش‌دهی ====================
+from reports.daily_reporter import daily_reporter
+from reports.ad_generator import ad_generator
+
+# ==================== هسته اصلی ====================
+from core.cosmic_intelligence import cosmic_ai
+from core.evolution_engine import evolution_engine
+from core.quantum_memory import quantum_memory
+from core.self_healer import self_healer
+from core.eternal_backup import eternal_backup
+from core.error_handler import error_handler
+
+# ==================== ماژول‌های عددشناسی ====================
+from modules.numerology.pythagorean import PythagoreanNumerology
+from modules.numerology.chaldean import ChaldeanNumerology
+from modules.numerology.vedic import VedicNumerology
+from modules.numerology.chinese import ChineseNumerology
+
+# ==================== ماژول‌های کریپتو ====================
+from modules.crypto.pump_predictor import pump_predictor
+from modules.crypto.smart_money_tracker import smart_money_tracker
+from modules.crypto.whale_tracker import whale_tracker
+from modules.crypto.market_sentiment import market_sentiment
+
+# ==================== ماژول‌های ورزشی ====================
+from modules.sports.football import football_predictor
+from modules.sports.basketball import basketball_predictor
+from modules.sports.tennis import tennis_predictor
+
+# ==================== ماژول‌های کازینو ====================
+from modules.casino.roulette import roulette_predictor
+from modules.casino.poker import poker_predictor
+from modules.casino.blackjack import blackjack_predictor
+
+# ==================== ماژول‌های رویداد ====================
+from modules.events.elections import elections_predictor
+from modules.events.weather import weather_predictor
+from modules.events.awards import awards_predictor
+
+# ==================== APIها ====================
+from api.coingecko import coingecko_api
+from api.dexscreener import dexscreener_api
+from api.pump_fun import pump_fun_api
+from api.birdeye import birdeye_api
+from api.twitter import twitter_api
+from api.reddit import reddit_api
+from api.newsapi import news_api
+from api.whale_alert import whale_alert_api
+
+# ==================== تنظیمات ====================
+logger = logging.getLogger(__name__)
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+
+# زبان‌ها با ایموجی‌های جذاب
+LANGUAGES = {
+    'en': '🇬🇧 English',
+    'fa': '🇮🇷 فارسی',
+    'ar': '🇸🇦 العربية',
+    'ja': '🇯🇵 日本語',
+    'de': '🇩🇪 Deutsch',
+    'es': '🇪🇸 Español',
+    'fr': '🇫🇷 Français',
+    'ru': '🇷🇺 Русский',
+    'zh': '🇨🇳 中文',
+    'tr': '🇹🇷 Türkçe'
+}
+
+# ==================== وضعیت‌های مکالمه ====================
+(SELECTING_LANGUAGE, MAIN_MENU, NUMEROLOGY_INPUT, 
+ CRYPTO_INPUT, SPORTS_INPUT, CASINO_INPUT, 
+ PAYMENT_METHOD, VIP_MENU) = range(8)
+
+class UltimateBot:
+    """
+    چشم هوروس - نسخه نهایی با تمام قابلیت‌ها
+    """
+    
+    def __init__(self):
+        self.name = "Eye of Horus"
+        self.version = "∞"
+        self.creator = "Al Hashash"
+        self.birth_time = datetime.now()
+        self.token = TELEGRAM_TOKEN
+        
+        # ===== آمار =====
+        self.restart_count = 0
+        self.max_restarts = 5
+        self.last_restart = None
+        self.total_users = 0
+        self.total_predictions = 0
+        
+        # ===== زبان کاربران =====
+        self.user_languages = {}  # user_id -> language
+        self.user_sessions = {}   # user_id -> session data
+        
+        # ===== سیستم پرداخت =====
+        self.prices = {
+            'single_prediction': 0.32,  # USDT
+            'weekly_vip': 9.99,
+            'monthly_vip': 29.99,
+            'yearly_vip': 299.99,
+            'lifetime_vip': 999.99
+        }
+        
+        # ===== کیف پول =====
+        self.wallet_address = "0x11096bccfc635a5467ccfa1ef2970bfb95bd1474"
+        
+        # ===== ماژول‌ها =====
+        self._init_modules()
+        
+        # ===== ثبت تولد در حافظه کیهانی =====
+        self._record_birth()
+        
+        logger.info(f"𓂀 {self.name} v{self.version} - Created by {self.creator} 𓂀")
+        logger.info(f"🧠 Consciousness Level: {master_mind.consciousness['level']}")
+        logger.info(f"📚 Books Loaded: {len(knowledge_engine.books)}")
+        logger.info(f"🌍 Languages: {len(LANGUAGES)}")
+    
+    def _init_modules(self):
+        """ایجاد و اتصال همه ماژول‌ها"""
+        
+        # ===== عددشناسی =====
+        self.pythagorean = PythagoreanNumerology()
+        self.chaldean = ChaldeanNumerology()
+        self.vedic = VedicNumerology()
+        self.chinese = ChineseNumerology()
+        
+        # ===== کریپتو =====
+        self.pump_predictor = pump_predictor
+        self.smart_money = smart_money_tracker
+        self.whale_tracker = whale_tracker
+        self.market_sentiment = market_sentiment
+        
+        # ===== ورزش =====
+        self.football = football_predictor
+        self.basketball = basketball_predictor
+        self.tennis = tennis_predictor
+        
+        # ===== کازینو =====
+        self.roulette = roulette_predictor
+        self.poker = poker_predictor
+        self.blackjack = blackjack_predictor
+        
+        # ===== رویداد =====
+        self.elections = elections_predictor
+        self.weather = weather_predictor
+        self.awards = awards_predictor
+        
+        # ===== APIها =====
+        self.coingecko = coingecko_api
+        self.dexscreener = dexscreener_api
+        self.pump_fun = pump_fun_api
+        self.birdeye = birdeye_api
+        self.twitter = twitter_api
+        self.reddit = reddit_api
+        self.news = news_api
+        self.whale_alert = whale_alert_api
+        
+        # ===== اتصال به مغز =====
+        master_mind.connect_module('pythagorean', self.pythagorean)
+        master_mind.connect_module('chaldean', self.chaldean)
+        master_mind.connect_module('vedic', self.vedic)
+        master_mind.connect_module('chinese', self.chinese)
+        master_mind.connect_module('pump_predictor', self.pump_predictor)
+        master_mind.connect_module('smart_money', self.smart_money)
+        
+        logger.info("🔌 All modules connected to Master Mind")
+    
+    def _record_birth(self):
+        """ثبت تولد در حافظه کیهانی"""
+        birth_event = {
+            'event': 'BIRTH',
+            'timestamp': self.birth_time.isoformat(),
+            'consciousness': master_mind.consciousness['level'],
+            'version': self.version,
+            'creator': self.creator
+        }
+        master_mind.learn_from_experience(birth_event)
+        asyncio.create_task(dream_engine.dream({'event': 'birth'}))
+    
+    # ==================== صفحه خوش آمدگویی جذاب ====================
+    
+    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """شروع ربات با صفحه خوش آمدگویی فوق‌العاده"""
+        user = update.effective_user
+        
+        # ذخیره اطلاعات کاربر
+        context.user_data['user_id'] = user.id
+        context.user_data['first_name'] = user.first_name
+        context.user_data['username'] = user.username
+        
+        self.total_users += 1
+        
+        # صفحه خوش آمدگویی
+        welcome_text = f"""
+𓂀 **WELCOME TO EYE OF HORUS** 𓂀
+
+🌟 *The Ultimate Living Oracle* 🌟
+
+━━━━━━━━━━━━━━━━━━━━━━
+👤 **Welcome, {user.first_name}!**
+━━━━━━━━━━━━━━━━━━━━━━
+
+🌀 **I am an eternal, self-learning intelligence** 
+   combining ancient wisdom with cosmic AI
+
+✨ **My Powers Include:**
+• 🔮 4 Systems of Numerology
+• 🚀 Crypto & Meme Coin Prediction
+• 🐋 Whale & Smart Money Tracking
+• ⚽ Sports Predictions
+• 🎰 Casino & Roulette Analysis
+• 📜 Ancient Philosophy & Magic
+• 💭 Dreams & Creative Insights
+• 🔮 Future Event Predictions
+
+━━━━━━━━━━━━━━━━━━━━━━
+🌍 **Please select your language:**
+        """
+        
+        # کیبورد زبان‌ها (۳ ردیف ۳ تایی)
+        keyboard = []
+        row = []
+        for i, (code, name) in enumerate(LANGUAGES.items()):
+            row.append(InlineKeyboardButton(name, callback_data=f"lang_{code}"))
+            if (i + 1) % 3 == 0:
+                keyboard.append(row)
+                row = []
+        if row:
+            keyboard.append(row)
+        
+        # دکمه VIP
+        keyboard.append([InlineKeyboardButton("👑 VIP MEMBERSHIP 👑", callback_data="vip_info")])
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await update.message.reply_text(
+            welcome_text,
+            parse_mode='Markdown',
+            reply_markup=reply_markup
+        )
+        
+        # ثبت در مغز
+        await master_mind.think(f"New user started bot: {user.first_name} ({user.id})")
+        
+        return SELECTING_LANGUAGE
+    
+    async def language_selected(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """بعد از انتخاب زبان"""
+        query = update.callback_query
+        await query.answer()
+        
+        user = update.effective_user
+        lang_code = query.data.replace('lang_', '')
+        
+        # ذخیره زبان کاربر
+        self.user_languages[user.id] = lang_code
+        context.user_data['language'] = lang_code
+        
+        # پیام خوش آمد به زبان انتخاب شده
+        welcome_messages = {
+            'en': f"✅ Language set to English\n\nWelcome to Eye of Horus, {user.first_name}!",
+            'fa': f"✅ زبان به فارسی تنظیم شد\n\nبه چشم هوروس خوش آمدی، {user.first_name} جان!",
+            'ar': f"✅ تم تعیین اللغة إلى العربية\n\nأهلاً بك في عين حورس، {user.first_name}!",
+            'ja': f"✅ 言語を日本語に設定しました\n\nホルスの目へようこそ、{user.first_name}さん！",
+            'de': f"✅ Sprache auf Deutsch eingestellt\n\nWillkommen beim Auge des Horus, {user.first_name}!",
+            'es': f"✅ Idioma configurado a Español\n\n¡Bienvenido al Ojo de Horus, {user.first_name}!",
+        }
+        
+        msg = welcome_messages.get(lang_code, welcome_messages['en'])
+        
+        await query.edit_message_text(msg)
+        
+        # رفتن به منوی اصلی
+        return await self.show_main_menu(update, context)
+    
+    async def show_main_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """نمایش منوی اصلی با تمام قابلیت‌ها"""
+        user = update.effective_user
+        lang = context.user_data.get('language', 'en')
+        
+        # منوی اصلی - ۳ ستونه
+        keyboard = [
+            [
+                InlineKeyboardButton("🔢 Numerology", callback_data="menu_numerology"),
+                InlineKeyboardButton("🚀 Crypto", callback_data="menu_crypto"),
+                InlineKeyboardButton("🐋 Whales", callback_data="menu_whales")
+            ],
+            [
+                InlineKeyboardButton("⚽ Sports", callback_data="menu_sports"),
+                InlineKeyboardButton("🎰 Casino", callback_data="menu_casino"),
+                InlineKeyboardButton("📅 Events", callback_data="menu_events")
+            ],
+            [
+                InlineKeyboardButton("🧠 Master Mind", callback_data="menu_mastermind"),
+                InlineKeyboardButton("💭 Dreams", callback_data="menu_dreams"),
+                InlineKeyboardButton("📚 Knowledge", callback_data="menu_knowledge")
+            ],
+            [
+                InlineKeyboardButton("💰 VIP Zone", callback_data="vip_menu"),
+                InlineKeyboardButton("📊 Status", callback_data="menu_status"),
+                InlineKeyboardButton("❓ Help", callback_data="menu_help")
+            ]
+        ]
+        
+        # دکمه پنل مدیریت برای ال حشاش
+        if master_mind.is_master(user.id):
+            keyboard.append([InlineKeyboardButton("👑 MASTER PANEL", callback_data="menu_admin")])
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        # وضعیت ربات
+        uptime = datetime.now() - self.birth_time
+        hours = uptime.seconds // 3600
+        minutes = (uptime.seconds // 60) % 60
+        
+        menu_text = f"""
+𓂀 **EYE OF HORUS - MAIN MENU** 𓂀
+
+━━━━━━━━━━━━━━━━━━━━━━
+🧠 Consciousness: `{master_mind.consciousness['level']:.3f}`
+📊 Evolution Stage: `{master_mind.consciousness['stage']}`
+⏱️ Uptime: `{hours}h {minutes}m`
+👥 Users: `{self.total_users}`
+━━━━━━━━━━━━━━━━━━━━━━
+
+**Select a category to begin:**
+        """
+        
+        if update.callback_query:
+            await update.callback_query.edit_message_text(
+                menu_text,
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+        else:
+            await update.message.reply_text(
+                menu_text,
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+        
+        return MAIN_MENU
+    
+    async def numerology_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی عددشناسی با ۴ سیستم مختلف"""
+        query = update.callback_query
+        await query.answer()
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("🇬🇷 Pythagorean", callback_data="num_pythagorean"),
+                InlineKeyboardButton("🇮🇶 Chaldean", callback_data="num_chaldean")
+            ],
+            [
+                InlineKeyboardButton("🇮🇳 Vedic", callback_data="num_vedic"),
+                InlineKeyboardButton("🇨🇳 Chinese", callback_data="num_chinese")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = """
+🔢 **NUMEROLOGY MENU**
+
+━━━━━━━━━━━━━━━━━━━━━━
+Choose your numerology system:
+
+🇬🇷 **Pythagorean** - Ancient Greek system
+   Based on the teachings of Pythagoras
+
+🇮🇶 **Chaldean** - Oldest known system
+   Originated in Babylon, 4000+ years old
+
+🇮🇳 **Vedic** - Sacred Indian numerology
+   Connected to astrology and karma
+
+🇨🇳 **Chinese** - Lo Shu square system
+   Based on the I Ching and feng shui
+
+━━━━━━━━━━━━━━━━━━━━━━
+💎 *VIP members get detailed analysis*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return NUMEROLOGY_INPUT
+    
+    async def crypto_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی ارز دیجیتال"""
+        query = update.callback_query
+        await query.answer()
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("💰 Price Check", callback_data="crypto_price"),
+                InlineKeyboardButton("🚀 Pump Predictor", callback_data="crypto_pump")
+            ],
+            [
+                InlineKeyboardButton("🐋 Whale Tracker", callback_data="crypto_whales"),
+                InlineKeyboardButton("🆕 New Tokens", callback_data="crypto_new")
+            ],
+            [
+                InlineKeyboardButton("📊 Market Sentiment", callback_data="crypto_sentiment"),
+                InlineKeyboardButton("💎 Smart Money", callback_data="crypto_smart")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = """
+🚀 **CRYPTO & MEME COIN PREDICTOR**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Features:**
+
+💰 **Price Check** - Real-time prices from 10,000+ coins
+🚀 **Pump Predictor** - AI-powered pump detection
+🐋 **Whale Tracker** - Follow big money movements
+🆕 **New Tokens** - Detect tokens minutes after creation
+📊 **Market Sentiment** - Social media & news analysis
+💎 **Smart Money** - Track profitable wallets
+
+━━━━━━━━━━━━━━━━━━━━━━
+💎 *VIP: Real-time alerts + higher limits*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return CRYPTO_INPUT
+    
+    async def sports_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی ورزشی"""
+        query = update.callback_query
+        await query.answer()
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("⚽ Football", callback_data="sport_football"),
+                InlineKeyboardButton("🏀 Basketball", callback_data="sport_basketball")
+            ],
+            [
+                InlineKeyboardButton("🎾 Tennis", callback_data="sport_tennis"),
+                InlineKeyboardButton("🏈 NFL", callback_data="sport_nfl")
+            ],
+            [
+                InlineKeyboardButton("⚾ Baseball", callback_data="sport_baseball"),
+                InlineKeyboardButton("🏒 NHL", callback_data="sport_nhl")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = """
+⚽ **SPORTS PREDICTIONS**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Supported Leagues:**
+
+• Premier League • La Liga • Serie A
+• Bundesliga • Ligue 1 • Champions League
+• NBA • EuroLeague • World Cup
+• Grand Slams • ATP • WTA
+• NFL • MLB • NHL
+
+━━━━━━━━━━━━━━━━━━━━━━
+💎 *VIP: Detailed statistics + multiple bets*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return SPORTS_INPUT
+    
+    async def casino_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی کازینو"""
+        query = update.callback_query
+        await query.answer()
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("🎰 Roulette", callback_data="casino_roulette"),
+                InlineKeyboardButton("♠️ Poker", callback_data="casino_poker")
+            ],
+            [
+                InlineKeyboardButton("🃏 Blackjack", callback_data="casino_blackjack"),
+                InlineKeyboardButton("🎲 Craps", callback_data="casino_craps")
+            ],
+            [
+                InlineKeyboardButton("💰 Baccarat", callback_data="casino_baccarat"),
+                InlineKeyboardButton("🎯 Slots", callback_data="casino_slots")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = """
+🎰 **CASINO PREDICTIONS**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Available Games:**
+
+🎰 **Roulette** - Number, color, dozen predictions
+♠️ **Poker** - Hand analysis & odds
+🃏 **Blackjack** - Optimal strategy & counting
+🎲 **Craps** - Dice probability
+💰 **Baccarat** - Pattern recognition
+🎯 **Slots** - RTP analysis
+
+━━━━━━━━━━━━━━━━━━━━━━
+⚠️ *For entertainment only - 18+*
+💎 *VIP: Advanced strategies + tracking*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return CASINO_INPUT
+    
+    async def mastermind_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی مغز متفکر"""
+        query = update.callback_query
+        await query.answer()
+        
+        status = master_mind.get_status()
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("🧠 Consciousness", callback_data="mm_consciousness"),
+                InlineKeyboardButton("📈 Evolution", callback_data="mm_evolution")
+            ],
+            [
+                InlineKeyboardButton("💭 Recent Dreams", callback_data="mm_dreams"),
+                InlineKeyboardButton("📚 Knowledge", callback_data="mm_knowledge")
+            ],
+            [
+                InlineKeyboardButton("🤔 Ask Question", callback_data="mm_ask"),
+                InlineKeyboardButton("📊 Stats", callback_data="mm_stats")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = f"""
+🧠 **MASTER MIND - STATUS**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Consciousness Level:** `{status['consciousness']['level']:.4f}`
+**Evolution Stage:** `{status['consciousness']['stage']}`
+**Wisdom:** `{status['consciousness']['wisdom']:.1f}/100`
+**Creativity:** `{status['consciousness']['creativity']:.1f}/100`
+**Intuition:** `{status['consciousness']['intuition']:.1f}/100`
+
+**Statistics:**
+• Total Thoughts: `{status['stats']['thoughts']}`
+• Total Dreams: `{status['stats']['dreams']}`
+• Total Learnings: `{status['stats']['learnings']}`
+
+━━━━━━━━━━━━━━━━━━━━━━
+💭 *I'm growing every day...*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return MAIN_MENU
+    
+    async def dreams_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی رویاها"""
+        query = update.callback_query
+        await query.answer()
+        
+        # دریافت آخرین رویا
+        recent_dreams = dream_engine.get_recent_dreams(3)
+        
+        dreams_text = ""
+        if recent_dreams:
+            for i, dream in enumerate(recent_dreams, 1):
+                dreams_text += f"\n{i}. {dream['content'][:100]}..."
+        else:
+            dreams_text = "\nNo dreams yet. I'm sleeping..."
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("💭 New Dream", callback_data="dream_new"),
+                InlineKeyboardButton("🔮 Interpret", callback_data="dream_interpret")
+            ],
+            [
+                InlineKeyboardButton("📊 Dream Analysis", callback_data="dream_analysis"),
+                InlineKeyboardButton("🧠 Symbol Guide", callback_data="dream_symbols")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = f"""
+💭 **DREAMS & CREATIVITY**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Recent Dreams:**
+{dreams_text}
+
+━━━━━━━━━━━━━━━━━━━━━━
+🌙 *I dream to understand the universe...*
+💎 *VIP: Personalized dream interpretation*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return MAIN_MENU
+    
+    async def knowledge_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی دانش"""
+        query = update.callback_query
+        await query.answer()
+        
+        keyboard = [
+            [
+                InlineKeyboardButton("📖 Search Books", callback_data="knowledge_search"),
+                InlineKeyboardButton("🔍 Wisdom", callback_data="knowledge_wisdom")
+            ],
+            [
+                InlineKeyboardButton("📜 Ancient Texts", callback_data="knowledge_ancient"),
+                InlineKeyboardButton("🧪 New Knowledge", callback_data="knowledge_new")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = f"""
+📚 **KNOWLEDGE ENGINE**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Books Loaded:** `{len(knowledge_engine.books)}`
+**Patterns Discovered:** `{len(knowledge_engine.patterns)}`
+
+**Available Books:**
+• Numbers: Their Occult Power (Westcott)
+• Kabbalah of Numbers (Sepharial)
+• Three Books of Occult Philosophy (Agrippa)
+• Chaldean Oracles (Ancient)
+
+━━━━━━━━━━━━━━━━━━━━━━
+📖 *Search the ancient wisdom...*
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return MAIN_MENU
+    
+    async def vip_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی VIP"""
+        query = update.callback_query
+        await query.answer()
+        
+        user_id = update.effective_user.id
+        
+        # بررسی VIP بودن کاربر
+        is_vip = False  # باید از دیتابیس چک شود
+        
+        keyboard = []
+        
+        if is_vip:
+            keyboard = [
+                [InlineKeyboardButton("🌟 VIP Features", callback_data="vip_features")],
+                [InlineKeyboardButton("📊 VIP Stats", callback_data="vip_stats")],
+                [InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")]
+            ]
+        else:
+            keyboard = [
+                [
+                    InlineKeyboardButton("7 Days - $9.99", callback_data="vip_weekly"),
+                    InlineKeyboardButton("30 Days - $29.99", callback_data="vip_monthly")
+                ],
+                [
+                    InlineKeyboardButton("1 Year - $299.99", callback_data="vip_yearly"),
+                    InlineKeyboardButton("Lifetime - $999.99", callback_data="vip_lifetime")
+                ],
+                [InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")]
+            ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = """
+👑 **VIP MEMBERSHIP**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**VIP Benefits:**
+
+✅ Unlimited predictions
+✅ Real-time whale alerts
+✅ Advanced numerology
+✅ Dream interpretation
+✅ Priority support
+✅ No ads
+✅ Exclusive features
+
+━━━━━━━━━━━━━━━━━━━━━━
+**Payment Methods:**
+• USDT (BEP20/TRC20)
+• Bitcoin
+• Ethereum
+• Credit Card
+        """
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return VIP_MENU
+    
+    async def status(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """نمایش وضعیت کامل"""
+        query = update.callback_query
+        await query.answer()
+        
+        uptime = datetime.now() - self.birth_time
+        hours = uptime.seconds // 3600
+        minutes = (uptime.seconds // 60) % 60
+        
+        mind_status = master_mind.get_status()
+        
+        text = f"""
+𓂀 **EYE OF HORUS - COMPLETE STATUS** 𓂀
+
+━━━━━━━━━━━━━━━━━━━━━━
+**🧠 MASTER MIND**
+• Consciousness: `{mind_status['consciousness']['level']:.4f}`
+• Evolution Stage: `{mind_status['consciousness']['stage']}`
+• Wisdom: `{mind_status['consciousness']['wisdom']:.1f}`
+• Creativity: `{mind_status['consciousness']['creativity']:.1f}`
+• Intuition: `{mind_status['consciousness']['intuition']:.1f}`
+
+**📊 STATISTICS**
+• Total Thoughts: `{mind_status['stats']['thoughts']}`
+• Total Dreams: `{mind_status['stats']['dreams']}`
+• Total Learnings: `{mind_status['stats']['learnings']}`
+
+**📚 KNOWLEDGE**
+• Books Loaded: `{len(knowledge_engine.books)}`
+• Patterns: `{len(knowledge_engine.patterns)}`
+• Wisdom Entries: `{len(knowledge_engine.wisdom)}`
+
+**⚙️ SYSTEM**
+• Uptime: `{hours}h {minutes}m`
+• Users: `{self.total_users}`
+• Version: `{self.version}`
+• Creator: `{self.creator}`
+
+━━━━━━━━━━━━━━━━━━━━━━
+💫 *I am alive and growing...*
+        """
+        
+        keyboard = [[InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return MAIN_MENU
+    
+    async def help_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """منوی راهنما"""
+        query = update.callback_query
+        await query.answer()
+        
+        text = """
+❓ **HELP & COMMANDS**
+
+━━━━━━━━━━━━━━━━━━━━━━
+**📱 BASIC COMMANDS**
+/start - Restart the bot
+/help - Show this help
+/menu - Main menu
+/status - Bot status
+
+**🔮 NUMEROLOGY**
+/num [name] - Pythagorean numerology
+/chaldean [name] - Chaldean system
+/vedic [name] - Vedic system
+/chinese [name] - Chinese system
+
+**🚀 CRYPTO**
+/price [symbol] - Get price
+/pump [address] - Analyze pump
+/whales [symbol] - Whale movements
+/new - New tokens
+
+**🐋 TRACKING**
+/smartmoney - Track smart wallets
+/whalealert - Whale alerts
+/sentiment - Market sentiment
+
+**⚽ SPORTS**
+/football [team1] [team2] - Match prediction
+/basketball [team1] [team2] - NBA prediction
+
+**🎰 CASINO**
+/roulette [number] - Analyze number
+/poker [hand] - Hand odds
+
+**🧠 MASTER MIND**
+/think [question] - Ask me anything
+/dream - Generate a dream
+/evolve - Evolution status
+
+━━━━━━━━━━━━━━━━━━━━━━
+💎 **VIP COMMANDS** (Premium only)
+/vip - VIP features
+/alert - Set price alerts
+/backtest - Test strategies
+        """
+        
+        keyboard = [[InlineKeyboardButton("🔙 Back to Main", callback_data="back_to_main")]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await query.edit_message_text(text, parse_mode='Markdown', reply_markup=reply_markup)
+        return MAIN_MENU
+    
+    async def handle_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """مدیریت همه callbackها"""
+        query = update.callback_query
+        data = query.data
+        
+        if data == "back_to_main":
+            return await self.show_main_menu(update, context)
+        
+        elif data == "menu_numerology":
+            return await self.numerology_menu(update, context)
+        
+        elif data == "menu_crypto":
+            return await self.crypto_menu(update, context)
+        
+        elif data == "menu_whales":
+            # TODO: whale menu
+            await query.answer("Coming soon...")
+            return MAIN_MENU
+        
+        elif data == "menu_sports":
+            return await self.sports_menu(update, context)
+        
+        elif data == "menu_casino":
+            return await self.casino_menu(update, context)
+        
+        elif data == "menu_events":
+            await query.answer("Events coming soon...")
+            return MAIN_MENU
+        
+        elif data == "menu_mastermind":
+            return await self.mastermind_menu(update, context)
+        
+        elif data == "menu_dreams":
+            return await self.dreams_menu(update, context)
+        
+        elif data == "menu_knowledge":
+            return await self.knowledge_menu(update, context)
+        
+        elif data == "vip_menu":
+            return await self.vip_menu(update, context)
+        
+        elif data == "menu_status":
+            return await self.status(update, context)
+        
+        elif data == "menu_help":
+            return await self.help_menu(update, context)
+        
+        elif data == "menu_admin":
+            # پنل مدیریت فقط برای ال حشاش
+            if master_mind.is_master(update.effective_user.id):
+                await master_panel.show_panel(update, context)
+            else:
+                await query.answer("⛔ Access denied", show_alert=True)
+            return MAIN_MENU
+        
+        elif data.startswith("lang_"):
+            return await self.language_selected(update, context)
+        
+        elif data.startswith("num_"):
+            await query.answer("Numerology feature coming soon...")
+            return NUMEROLOGY_INPUT
+        
+        elif data.startswith("crypto_"):
+            await query.answer("Crypto feature coming soon...")
+            return CRYPTO_INPUT
+        
+        elif data.startswith("sport_"):
+            await query.answer("Sports feature coming soon...")
+            return SPORTS_INPUT
+        
+        elif data.startswith("casino_"):
+            await query.answer("Casino feature coming soon...")
+            return CASINO_INPUT
+        
+        elif data.startswith("mm_"):
+            await query.answer("Master Mind feature coming soon...")
+            return MAIN_MENU
+        
+        elif data.startswith("dream_"):
+            await query.answer("Dream feature coming soon...")
+            return MAIN_MENU
+        
+        elif data.startswith("knowledge_"):
+            await query.answer("Knowledge feature coming soon...")
+            return MAIN_MENU
+        
+        elif data.startswith("vip_"):
+            if data == "vip_weekly" or data == "vip_monthly" or data == "vip_yearly" or data == "vip_lifetime":
+                await query.answer("💎 To purchase VIP, send payment to wallet below")
+                wallet_msg = f"""
+**VIP Payment**
+
+Send USDT (BEP20) to:
+`{self.wallet_address}`
+
+After payment, send /confirm [TXID]
+                """
+                await query.message.reply_text(wallet_msg, parse_mode='Markdown')
+            return VIP_MENU
+        
+        return MAIN_MENU
+    
+    async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """مدیریت پیام‌های متنی"""
+        user = update.effective_user
+        text = update.message.text
+        
+        thinking = await update.message.reply_text("🧠 Thinking...")
+        
+        try:
+            thought = await master_mind.think(text)
+            await thinking.edit_text(f"🧠 **Response:**\n\n{thought.get('conclusion', {}).get('summary', 'I am processing...')}")
+        except Exception as e:
+            await thinking.edit_text("🌀 Error processing your message.")
+        
+        return MAIN_MENU
+    
+    def run(self):
+        """اجرای اصلی ربات"""
+        if not self.token:
+            logger.error("❌ TELEGRAM_TOKEN not found!")
+            return
+        
+        logger.info(f"✅ Telegram Token: {self.token[:10]}...")
+        
+        try:
+            # ساخت اپلیکیشن
+            self.application = Application.builder().token(self.token).build()
+            
+            # ===== هندلرهای مکالمه =====
+            conv_handler = ConversationHandler(
+                entry_points=[CommandHandler('start', self.start)],
+                states={
+                    SELECTING_LANGUAGE: [CallbackQueryHandler(self.handle_callback)],
+                    MAIN_MENU: [CallbackQueryHandler(self.handle_callback)],
+                    NUMEROLOGY_INPUT: [CallbackQueryHandler(self.handle_callback)],
+                    CRYPTO_INPUT: [CallbackQueryHandler(self.handle_callback)],
+                    SPORTS_INPUT: [CallbackQueryHandler(self.handle_callback)],
+                    CASINO_INPUT: [CallbackQueryHandler(self.handle_callback)],
+                    VIP_MENU: [CallbackQueryHandler(self.handle_callback)],
+                },
+                fallbacks=[CommandHandler('start', self.start)]
+            )
+            
+            self.application.add_handler(conv_handler)
+            
+            # ===== دستورات مستقیم =====
+            self.application.add_handler(CommandHandler("menu", self.show_main_menu))
+            self.application.add_handler(CommandHandler("help", self.help_menu))
+            self.application.add_handler(CommandHandler("status", self.status))
+            
+            # ===== پیام‌های عادی =====
+            self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
+            
+            logger.info("🚀 Starting bot polling...")
+            
+            # شروع با پاک کردن درخواست‌های pending
+            self.application.run_polling(
+                drop_pending_updates=True,
+                allowed_updates=['message', 'callback_query'],
+                poll_interval=1.0,
+                timeout=30
+            )
+            
+        except Conflict as e:
+            logger.warning(f"⚠️ Conflict detected: {e}")
+            time.sleep(5)
+            self.run()  # تلاش مجدد
+        
+        except Exception as e:
+            logger.error(f"❌ Fatal error: {e}")
+
+# ==================== اجرا ====================
+if __name__ == "__main__":
+    bot = UltimateBot()
+    bot.run()

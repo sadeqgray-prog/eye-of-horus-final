@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+𓂀 EYE OF HORUS - MAIN BOT 𓂀
+"""
+
+import logging
+import sys
+import os
+import time
+from datetime import datetime
+from pathlib import Path
+
+# تنظیم لاگ
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger('main')
+
+def main():
+    """تابع اصلی"""
+    logger.info("="*50)
+    logger.info("🚀 Eye of Horus Bot Started")
+    logger.info("="*50)
+    
+    try:
+        # ایمپورت ربات
+        from bot.ultimate_bot import UltimateBot
+        
+        # چک کردن توکن
+        token = os.environ.get('TELEGRAM_TOKEN')
+        if not token:
+            logger.error("❌ TELEGRAM_TOKEN not found in environment variables!")
+            logger.info("💡 Make sure you've set it in Railway Variables")
+            return 1
+        
+        logger.info(f"✅ TELEGRAM_TOKEN found (length: {len(token)})")
+        
+        # ایجاد و اجرای ربات
+        bot = UltimateBot()
+        logger.info("🤖 Starting bot polling...")
+        bot.run()
+        
+    except ImportError as e:
+        logger.error(f"❌ Import error: {e}")
+        logger.info("💡 Make sure bot/ultimate_bot.py exists")
+        return 1
+    except Exception as e:
+        logger.error(f"❌ Fatal error: {e}")
+        return 1
+    
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,3 @@
+ModuleNotFoundError: No module named 'web3'
+ModuleNotFoundError: No module named 'solana'
+ImportError: cannot import name 'Client' from 'telegram'

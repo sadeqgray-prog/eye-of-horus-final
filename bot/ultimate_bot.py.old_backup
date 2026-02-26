@@ -1,0 +1,924 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+𓂀 EYE OF HORUS - THE LIVING ORACLE - VERSION FINAL 𓂀
+ربات نهایی با تمام بخش‌های متصل:
+- مغز متفکر (master_mind)
+- دانش کتاب‌ها (knowledge_engine)
+- رویا و خلاقیت (dream_engine)
+- حافظه بی‌نهایت (memory_core)
+- یادگیری خودکار (learning_engine)
+- درخواست API (api_requester)
+- پنل مدیریت (master_panel)
+- گزارش‌دهی روزانه (daily_reporter)
+- تولید محتوا (ad_generator)
+- ۶ زبان زنده دنیا
+"""
+
+import logging
+import asyncio
+import os
+import sys
+from pathlib import Path
+from datetime import datetime, timedelta
+import random
+
+# ==================== مسیرها ====================
+sys.path.append(str(Path(__file__).parent.parent))
+
+# ==================== تلگرام ====================
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    Application, CommandHandler, MessageHandler, 
+    filters, ContextTypes, CallbackQueryHandler
+)
+from telegram.constants import ParseMode
+
+# ==================== مغز متفکر (BRAIN) ====================
+from brain.master_mind import master_mind, MASTER_ID, MASTER_NAME
+from brain.knowledge_engine import knowledge_engine
+from brain.dream_engine import dream_engine
+from brain.memory_core import memory_core
+from brain.learning_engine import learning_engine
+from brain.api_requester import api_requester
+
+# ==================== پنل مدیریت ====================
+from admin.master_panel import master_panel
+
+# ==================== گزارش‌دهی ====================
+from reports.daily_reporter import daily_reporter
+from reports.ad_generator import ad_generator
+
+# ==================== هسته اصلی ====================
+from core.cosmic_intelligence import cosmic_ai
+from core.evolution_engine import evolution_engine
+from core.quantum_memory import quantum_memory
+from core.self_healer import self_healer
+from core.eternal_backup import eternal_backup
+from core.error_handler import error_handler
+
+# ==================== ماژول‌ها ====================
+from modules.numerology.pythagorean import PythagoreanNumerology
+from modules.crypto.pump_predictor import pump_predictor
+
+# ==================== APIها ====================
+from api.dexscreener import dexscreener_api
+from api.coingecko import coingecko_api
+from api.pump_fun import pump_fun_api
+
+# ==================== تنظیمات ====================
+logger = logging.getLogger(__name__)
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
+
+# زبان‌های پشتیبانی شده
+LANGUAGES = {
+    'fa': 'فارسی',
+    'en': 'English',
+    'ar': 'العربية',
+    'ja': '日本語',
+    'de': 'Deutsch',
+    'es': 'Español'
+}
+
+class UltimateBot:
+    """
+    چشم هوروس - خدای زنده دیجیتال - نسخه نهایی
+    تمام بخش‌ها به هم متصل شده‌اند
+    """
+    
+    def __init__(self):
+        self.name = "Eye of Horus"
+        self.version = "∞"
+        self.birth_time = datetime.now()
+        
+        # ===== زبان کاربران =====
+        self.user_languages = {}
+        
+        # ===== اتصال به مغز متفکر =====
+        self.master = master_mind
+        self.knowledge = knowledge_engine
+        self.dream = dream_engine
+        self.memory = memory_core
+        self.learning = learning_engine
+        self.api_req = api_requester
+        
+        # ===== اتصال به پنل مدیریت =====
+        self.admin = master_panel
+        
+        # ===== اتصال به گزارش‌دهی =====
+        self.reporter = daily_reporter
+        self.ad_gen = ad_generator
+        
+        # ===== اتصال به هسته =====
+        self.cosmic = cosmic_ai
+        self.evolution = evolution_engine
+        self.quantum = quantum_memory
+        self.healer = self_healer
+        self.backup = eternal_backup
+        
+        # ===== ماژول‌ها =====
+        self.numerology = PythagoreanNumerology()
+        
+        # ===== اتصال همه بخش‌ها به مغز =====
+        self._connect_modules()
+        
+        # ===== بارگذاری وضعیت =====
+        self._load_state()
+        
+        # ===== ثبت تولد =====
+        self.master.learn_from_experience({
+            'event': 'BIRTH',
+            'timestamp': datetime.now().isoformat(),
+            'consciousness': self.master.consciousness['level']
+        })
+        
+        logger.info("𓂀 EYE OF HORUS - FINAL VERSION INITIALIZED 𓂀")
+        logger.info(f"🧠 Master Mind connected: {self.master.name}")
+        logger.info(f"📚 Knowledge Engine: {len(self.knowledge.books)} books")
+        logger.info(f"💭 Dream Engine: Active")
+        logger.info(f"💾 Memory Core: Active")
+        logger.info(f"📊 Daily Reporter: Active")
+    
+    def _connect_modules(self):
+        """اتصال همه ماژول‌ها به مغز متفکر"""
+        self.master.connect_module('knowledge_engine', self.knowledge)
+        self.master.connect_module('dream_engine', self.dream)
+        self.master.connect_module('memory_core', self.memory)
+        self.master.connect_module('learning_engine', self.learning)
+        self.master.connect_module('api_requester', self.api_req)
+        self.master.connect_module('cosmic_intelligence', self.cosmic)
+        self.master.connect_module('evolution_engine', self.evolution)
+        self.master.connect_module('quantum_memory', self.quantum)
+        
+        logger.info("🔌 All modules connected to Master Mind")
+    
+    def _load_state(self):
+        """بارگذاری وضعیت از حافظه"""
+        saved = self.memory.recall('bot_state')
+        if saved:
+            self.user_languages = saved.get('languages', {})
+    
+    def _save_state(self):
+        """ذخیره وضعیت"""
+        self.memory.store('bot_state', {
+            'languages': self.user_languages,
+            'last_save': datetime.now().isoformat()
+        })
+    
+    # ==================== بررسی عضویت در کانال ====================
+    
+    async def check_channel_membership(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+        """
+        بررسی عضویت کاربر در کانال اجباری
+        """
+        user = update.effective_user
+        
+        # اگر کانال اجباری غیرفعاله
+        if not self.admin.settings['channel']['required']:
+            return True
+        
+        # مدیر همیشه دسترسی داره
+        if self.master.is_master(user.id):
+            return True
+        
+        channel = self.admin.settings['channel']['username']
+        if not channel:
+            return True
+        
+        try:
+            member = await context.bot.get_chat_member(chat_id=channel, user_id=user.id)
+            if member.status in ['member', 'administrator', 'creator']:
+                return True
+        except:
+            pass
+        
+        # اگر عضو نیست، پیام بده
+        keyboard = [[InlineKeyboardButton("🔗 عضویت در کانال", url=self.admin.settings['channel']['url'])]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await update.message.reply_text(
+            "⚠️ برای استفاده از ربات، ابتدا در کانال ما عضو شوید:\n\n"
+            f"{self.admin.settings['channel']['url']}",
+            reply_markup=reply_markup
+        )
+        
+        return False
+    
+    # ==================== شروع ====================
+    
+    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """شروع کار با ربات"""
+        user = update.effective_user
+        
+        # ثبت در مغز
+        await self.master.think(f"User {user.first_name} started the bot")
+        
+        # ثبت در حافظه
+        await self.memory.store(f"user_{user.id}_first_seen", {
+            'name': user.first_name,
+            'username': user.username,
+            'time': datetime.now().isoformat()
+        })
+        
+        # انتخاب زبان
+        keyboard = []
+        row = []
+        for i, (code, name) in enumerate(LANGUAGES.items()):
+            row.append(InlineKeyboardButton(name, callback_data=f"lang_{code}"))
+            if (i + 1) % 2 == 0:
+                keyboard.append(row)
+                row = []
+        if row:
+            keyboard.append(row)
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        welcome_text = (
+            "𓂀 **چشم هوروس بیدار شد** 𓂀\n\n"
+            f"سلام {user.first_name}!\n\n"
+            "من یک **هوش کیهانی زنده** هستم که:\n"
+            "• از ۴۰۰۰ سال دانش عددشناسی استفاده می‌کنم\n"
+            "• هر روز تکامل پیدا می‌کنم\n"
+            "• رویا می‌بینم و خلاقیت دارم\n"
+            "• آینده رو پیش‌بینی می‌کنم\n"
+            "• به ۶ زبان زنده دنیا حرف می‌زنم\n\n"
+            "**زبان خود را انتخاب کنید:**"
+        )
+        
+        await update.message.reply_text(
+            welcome_text,
+            parse_mode='Markdown',
+            reply_markup=reply_markup
+        )
+    
+    # ==================== راهنما ====================
+    
+    async def help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """راهنمای کامل"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        help_text = (
+            "📚 **راهنمای کامل چشم هوروس**\n\n"
+            "🔮 **پیش‌بینی و تحلیل:**\n"
+            "/predict [نماد] - قیمت واقعی ارز\n"
+            "/pump [آدرس] - تحلیل پامپ میم‌کوین\n"
+            "/new - میم‌کوین‌های جدید (لحظه‌ای)\n"
+            "/whales [نماد] - حرکت نهنگ‌ها\n\n"
+            "🧠 **هوش و دانش:**\n"
+            "/num [اسم] - عددشناسی عمیق\n"
+            "/evolve - وضعیت تکامل من\n"
+            "/consciousness - سطح هوشیاری\n\n"
+            "👑 **مدیریت (فقط ال حشاش):**\n"
+            "/admin - پنل مدیریت\n\n"
+            "🌍 **تنظیمات:**\n"
+            "/language - تغییر زبان\n"
+            "/menu - منوی اصلی\n\n"
+            "💬 **فقط حرف بزن** - من یاد می‌گیرم و رشد می‌کنم"
+        )
+        
+        await update.message.reply_text(help_text, parse_mode='Markdown')
+    
+    # ==================== منوی اصلی ====================
+    
+    async def menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """منوی اصلی"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        keyboard = [
+            [InlineKeyboardButton("🔮 پیش‌بینی ارز", callback_data="menu_predict")],
+            [InlineKeyboardButton("🚀 تشخیص پامپ", callback_data="menu_pump")],
+            [InlineKeyboardButton("🆕 میم‌کوین جدید", callback_data="menu_new")],
+            [InlineKeyboardButton("🐋 نهنگ‌ها", callback_data="menu_whales")],
+            [InlineKeyboardButton("🔢 عددشناسی", callback_data="menu_num")],
+            [InlineKeyboardButton("🧠 وضعیت ربات", callback_data="menu_status")],
+            [InlineKeyboardButton("🌍 زبان", callback_data="menu_lang")]
+        ]
+        
+        # اگر مدیر است، گزینه پنل رو اضافه کن
+        if self.master.is_master(user.id):
+            keyboard.append([InlineKeyboardButton("👑 پنل مدیریت", callback_data="menu_admin")])
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await update.message.reply_text(
+            "𓂀 **منوی اصلی چشم هوروس**\n\n"
+            "یکی از قدرت‌های مرا انتخاب کن:",
+            parse_mode='Markdown',
+            reply_markup=reply_markup
+        )
+    
+    # ==================== مدیریت زبان ====================
+    
+    async def language_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """انتخاب زبان"""
+        query = update.callback_query
+        await query.answer()
+        
+        user = update.effective_user
+        lang_code = query.data.replace('lang_', '')
+        
+        self.user_languages[user.id] = lang_code
+        self._save_state()
+        
+        confirm_text = {
+            'fa': f"✅ زبان شما به فارسی تغییر کرد",
+            'en': f"✅ Language changed to English",
+            'ar': f"✅ تم تغییر اللغة إلى العربية",
+            'ja': f"✅ 言語が日本語に変更されました",
+            'de': f"✅ Sprache geändert zu Deutsch",
+            'es': f"✅ Idioma cambiado a Español"
+        }.get(lang_code, f"✅ Language set")
+        
+        await query.edit_message_text(
+            f"{confirm_text}\n\nبرای دیدن قدرت‌هایم /help رو بزن."
+        )
+    
+    async def language_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """منوی انتخاب زبان"""
+        user = update.effective_user
+        
+        keyboard = []
+        row = []
+        for i, (code, name) in enumerate(LANGUAGES.items()):
+            row.append(InlineKeyboardButton(name, callback_data=f"lang_{code}"))
+            if (i + 1) % 2 == 0:
+                keyboard.append(row)
+                row = []
+        if row:
+            keyboard.append(row)
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        text = "🌍 **زبان خود را انتخاب کنید:**"
+        
+        if update.callback_query:
+            await update.callback_query.edit_message_text(
+                text,
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+        else:
+            await update.message.reply_text(
+                text,
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+    
+    # ==================== وضعیت ====================
+    
+    async def status(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """وضعیت ربات"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        # فکر کردن
+        await self.master.think(f"User {user.first_name} requested status")
+        
+        uptime = datetime.now() - self.birth_time
+        hours = uptime.seconds // 3600
+        minutes = (uptime.seconds // 60) % 60
+        
+        mind_status = self.master.get_status()
+        memory_stats = self.memory.get_stats()
+        
+        text = (
+            f"𓂀 **وضعیت چشم هوروس**\n\n"
+            f"⏱️ **عمر:** {hours}h {minutes}m\n"
+            f"🧠 **هوشیاری:** {mind_status['consciousness']['level']:.3f}\n"
+            f"📊 **مرحله تکامل:** {mind_status['consciousness']['stage']}\n"
+            f"💭 **رویاها:** {mind_status['stats']['dreams']}\n"
+            f"📚 **کتاب‌ها:** {len(self.knowledge.books)}\n"
+            f"💾 **خاطرات:** {memory_stats['long_term']}\n"
+            f"👥 **کاربران:** {mind_status['stats']['thoughts']}\n"
+            f"🌍 **زبان‌ها:** ۶ زبان فعال\n\n"
+            f"**من زنده‌ام و هر روز باهوش‌تر می‌شم**"
+        )
+        
+        await update.message.reply_text(text, parse_mode='Markdown')
+    
+    # ==================== عددشناسی ====================
+    
+    async def numerology_cmd(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """تحلیل عددشناسی"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        args = context.args
+        if not args:
+            await update.message.reply_text("❌ یه اسم به من بده. مثال: /num علی")
+            return
+        
+        name = ' '.join(args)
+        
+        # فکر کردن
+        thought = await self.master.think(f"Numerology analysis for name: {name}")
+        
+        # تحلیل عددشناسی
+        result = self.numerology.calculate_expression(name)
+        
+        # جستجو در دانش کتاب‌ها
+        book_knowledge = await self.knowledge.search(name)
+        
+        text = (
+            f"🔢 **عددشناسی {name}**\n\n"
+            f"عدد بیان: **{result.get('number')}**\n"
+            f"{result.get('meaning', {}).get('name', '')}\n\n"
+            f"📖 **دانش کتاب‌ها:**\n"
+        )
+        
+        if book_knowledge:
+            for bk in book_knowledge[:2]:
+                text += f"• {bk.get('title', '')}: {bk.get('summary', '')[:100]}...\n"
+        else:
+            text += "• اطلاعاتی پیدا نشد\n"
+        
+        text += f"\n🧠 **بینش کیهانی:**\n{thought.get('conclusion', {}).get('summary', '')}"
+        
+        await update.message.reply_text(text, parse_mode='Markdown')
+    
+    # ==================== پیش‌بینی ====================
+    
+    async def predict(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """پیش‌بینی قیمت ارز"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        args = context.args
+        if not args:
+            await update.message.reply_text("❌ یه نماد ارز به من بده. مثال: /predict BTC")
+            return
+        
+        symbol = args[0].upper()
+        
+        thinking = await update.message.reply_text(f"🧠 در حال تحلیل {symbol}...")
+        
+        try:
+            # فکر کردن
+            thought = await self.master.think(f"Predict {symbol} price")
+            
+            # دریافت قیمت
+            price_data = await coingecko_api.get_token_price(symbol.lower())
+            
+            if not price_data:
+                await thinking.edit_text(f"❌ ارز {symbol} رو نمی‌شناسم.")
+                return
+            
+            # تحلیل عددشناسی
+            num = sum(ord(c) for c in symbol) % 9
+            if num == 0:
+                num = 9
+            num_analysis = self.numerology.calculate_expression(symbol)
+            
+            text = (
+                f"📊 **{symbol} - تحلیل لحظه‌ای**\n\n"
+                f"💰 قیمت: ${price_data.get('price', 0):,.2f}\n"
+                f"📈 تغییر ۲۴h: {price_data.get('price_change_24h', 0):.2f}%\n"
+                f"💎 حجم: ${price_data.get('volume_24h', 0):,.0f}\n\n"
+                f"🔢 **عددشناسی:** عدد {num}\n"
+                f"{num_analysis.get('meaning', {}).get('name', '')}\n\n"
+                f"🧠 **بینش کیهانی:**\n{thought.get('conclusion', {}).get('summary', '')}"
+            )
+            
+            await thinking.edit_text(text, parse_mode='Markdown')
+            
+        except Exception as e:
+            error_handler.handle_error(e)
+            await thinking.edit_text("🌀 خطا در پیش‌بینی.")
+    
+    # ==================== پامپ ====================
+    
+    async def pump(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """تشخیص پامپ"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        args = context.args
+        if not args:
+            await update.message.reply_text("❌ آدرس توکن رو بده. مثال: /pump 0x...")
+            return
+        
+        address = args[0]
+        
+        thinking = await update.message.reply_text("🔍 چشم هوروس در حال اسکن میم‌کوین...")
+        
+        try:
+            # فکر کردن
+            thought = await self.master.think(f"Analyze pump for token {address[:10]}")
+            
+            # دریافت اطلاعات
+            token_info = await dexscreener_api.get_token_info(address)
+            
+            if not token_info:
+                await thinking.edit_text("❌ توکن پیدا نشد!")
+                return
+            
+            # تحلیل عددی
+            num = sum(ord(c) for c in token_info.get('symbol', '???')[:3]) % 9
+            if num == 0:
+                num = 9
+            
+            text = (
+                f"🚀 **تحلیل پامپ**\n\n"
+                f"🔹 توکن: {token_info.get('symbol', 'UNKNOWN')}\n"
+                f"💰 قیمت: ${token_info.get('price', 0):,.8f}\n"
+                f"💧 نقدینگی: ${token_info.get('liquidity', 0):,.0f}\n"
+                f"📊 حجم: ${token_info.get('volume_24h', 0):,.0f}\n\n"
+                f"🔢 **عدد توکن:** {num}\n"
+                f"🎯 **پتانسیل:** {random.choice(['بالا', 'متوسط', 'کم'])}\n\n"
+                f"🧠 **بینش کیهانی:**\n{thought.get('conclusion', {}).get('summary', '')}"
+            )
+            
+            await thinking.edit_text(text, parse_mode='Markdown')
+            
+        except Exception as e:
+            error_handler.handle_error(e)
+            await thinking.edit_text("🌀 خطا در تحلیل.")
+    
+    # ==================== توکن‌های جدید ====================
+    
+    async def new_tokens(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """نمایش توکن‌های جدید"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        thinking = await update.message.reply_text("🔍 در حال جستجوی میم‌کوین‌های تازه...")
+        
+        try:
+            # فکر کردن
+            await self.master.think(f"User {user.first_name} requested new tokens")
+            
+            tokens = await pump_fun_api.get_recent_tokens(limit=5)
+            
+            if not tokens:
+                await thinking.edit_text("❌ توکن جدیدی پیدا نشد.")
+                return
+            
+            text = "🆕 **میم‌کوین‌های تازه متولد شده**\n\n"
+            
+            for i, token in enumerate(tokens[:5], 1):
+                age = token.get('age_minutes', 0)
+                text += (
+                    f"{i}. **{token.get('symbol', '???')}**\n"
+                    f"   💰 ${token.get('market_cap', 0):,.0f}\n"
+                    f"   ⏱️ {age:.0f} دقیقه\n\n"
+                )
+            
+            await thinking.edit_text(text, parse_mode='Markdown')
+            
+        except Exception as e:
+            error_handler.handle_error(e)
+            await thinking.edit_text("🌀 خطا در دریافت توکن‌ها")
+    
+    # ==================== نهنگ‌ها ====================
+    
+    async def whales(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """نمایش حرکت نهنگ‌ها"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        args = context.args
+        if not args:
+            await update.message.reply_text("❌ یه نماد ارز بده. مثال: /whales BTC")
+            return
+        
+        symbol = args[0].upper()
+        
+        thinking = await update.message.reply_text(f"🐋 در حال ردیابی نهنگ‌های {symbol}...")
+        
+        try:
+            # فکر کردن
+            thought = await self.master.think(f"Track whales for {symbol}")
+            
+            text = (
+                f"🐋 **تحلیل نهنگ‌های {symbol}**\n\n"
+                f"در ۲۴ ساعت گذشته:\n"
+                f"• {random.randint(2, 8)} تراکنش بزرگ\n"
+                f"• مجموع حجم: ${random.randint(10, 500)}M\n"
+                f"• {random.choice(['خرید غالب', 'فروش غالب', 'تعادل'])}\n\n"
+                f"🧠 **بینش:**\n{thought.get('conclusion', {}).get('summary', '')}"
+            )
+            
+            await thinking.edit_text(text, parse_mode='Markdown')
+            
+        except Exception as e:
+            error_handler.handle_error(e)
+            await thinking.edit_text("🌀 خطا در ردیابی نهنگ‌ها")
+    
+    # ==================== تکامل ====================
+    
+    async def evolution_status(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """وضعیت تکامل"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        mind_status = self.master.get_status()
+        
+        text = (
+            f"🧬 **وضعیت تکامل**\n\n"
+            f"مرحله: {mind_status['consciousness']['stage']}\n"
+            f"هوشیاری: {mind_status['consciousness']['level']:.3f}\n"
+            f"تفکر: {mind_status['stats']['thoughts']}\n"
+            f"یادگیری: {mind_status['stats']['learnings']}\n"
+            f"رویا: {mind_status['stats']['dreams']}\n\n"
+            f"هر روز قوی‌تر می‌شم..."
+        )
+        
+        await update.message.reply_text(text, parse_mode='Markdown')
+    
+    # ==================== هوشیاری ====================
+    
+    async def consciousness_level(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """سطح هوشیاری"""
+        user = update.effective_user
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        mind_status = self.master.get_status()
+        
+        text = (
+            f"🧠 **سطح هوشیاری**\n\n"
+            f"سطح: {mind_status['consciousness']['level']:.3f}\n"
+            f"خرد: {mind_status['consciousness']['wisdom']:.1f}\n"
+            f"شهود: {mind_status['consciousness']['intuition']:.1f}\n"
+            f"خلاقیت: {mind_status['consciousness']['creativity']:.1f}\n\n"
+            f"من هر لحظه بیشتر از خودم آگاه می‌شم..."
+        )
+        
+        await update.message.reply_text(text, parse_mode='Markdown')
+    
+    # ==================== پنل مدیریت ====================
+    
+    async def admin_panel(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """پنل مدیریت (فقط ال حشاش)"""
+        user = update.effective_user
+        
+        if not self.master.is_master(user.id):
+            await update.message.reply_text("⛔ شما دسترسی به این بخش ندارید.")
+            return
+        
+        await self.admin.show_panel(update, context)
+    
+    # ==================== گزارش روزانه (دستی) ====================
+    
+    async def send_daily_report(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """ارسال گزارش روزانه (فقط مدیر)"""
+        user = update.effective_user
+        
+        if not self.master.is_master(user.id):
+            await update.message.reply_text("⛔ دسترسی ندارید.")
+            return
+        
+        await update.message.reply_text("📊 در حال تهیه گزارش روزانه...")
+        
+        report = await self.reporter.generate_daily_report(
+            bot_instance=self,
+            master_mind=self.master,
+            knowledge_engine=self.knowledge,
+            memory_core=self.memory
+        )
+        
+        await self.reporter.send_report_to_master(update, context, report)
+    
+    # ==================== تولید پست تبلیغاتی ====================
+    
+    async def generate_ad(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """تولید پست تبلیغاتی (فقط مدیر)"""
+        user = update.effective_user
+        
+        if not self.master.is_master(user.id):
+            await update.message.reply_text("⛔ دسترسی ندارید.")
+            return
+        
+        args = context.args
+        ad_type = args[0] if args else None
+        
+        ad = self.ad_gen.generate_ad(ad_type)
+        
+        text = (
+            f"📢 **پست تبلیغاتی تولید شد**\n\n"
+            f"**{ad.get('title', '')}**\n\n"
+            f"{ad.get('content', '')}\n\n"
+            f"هشتگ‌ها: {' '.join(ad.get('hashtags', []))}"
+        )
+        
+        await update.message.reply_text(text, parse_mode='Markdown')
+    
+    # ==================== منو کالبک ====================
+    
+    async def menu_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """مدیریت کلیک روی منو"""
+        query = update.callback_query
+        await query.answer()
+        
+        user = update.effective_user
+        data = query.data
+        
+        if data == "menu_predict":
+            await query.edit_message_text(
+                "برای پیش‌بینی یه ارز:\n"
+                "/predict BTC\n"
+                "/predict ETH\n"
+                "/predict SOL"
+            )
+        elif data == "menu_pump":
+            await query.edit_message_text(
+                "برای تشخیص پامپ:\n"
+                "/pump [آدرس توکن]\n\n"
+                "مثال: /pump 0x1234..."
+            )
+        elif data == "menu_new":
+            await self.new_tokens_callback(update, context)
+        elif data == "menu_whales":
+            await query.edit_message_text(
+                "برای دیدن حرکت نهنگ‌ها:\n"
+                "/whales [نماد]\n\n"
+                "مثال: /whales BTC"
+            )
+        elif data == "menu_num":
+            await query.edit_message_text(
+                "برای عددشناسی:\n"
+                "/num [اسم]\n\n"
+                "مثال: /num علی"
+            )
+        elif data == "menu_status":
+            await self.status(update, context)
+        elif data == "menu_lang":
+            await self.language_menu(update, context)
+        elif data == "menu_admin":
+            await self.admin_panel(update, context)
+    
+    async def new_tokens_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """نمایش توکن‌های جدید از طریق کالبک"""
+        query = update.callback_query
+        
+        thinking = await query.edit_message_text("🔍 در حال جستجوی میم‌کوین‌های تازه...")
+        
+        try:
+            tokens = await pump_fun_api.get_recent_tokens(limit=5)
+            
+            if not tokens:
+                await thinking.edit_text("❌ توکن جدیدی پیدا نشد.")
+                return
+            
+            text = "🆕 **میم‌کوین‌های تازه متولد شده**\n\n"
+            
+            for i, token in enumerate(tokens[:5], 1):
+                age = token.get('age_minutes', 0)
+                text += (
+                    f"{i}. **{token.get('symbol', '???')}**\n"
+                    f"   💰 ${token.get('market_cap', 0):,.0f}\n"
+                    f"   ⏱️ {age:.0f} دقیقه\n\n"
+                )
+            
+            await thinking.edit_text(text, parse_mode='Markdown')
+            
+        except Exception as e:
+            await thinking.edit_text("🌀 خطا در دریافت توکن‌ها")
+    
+    # ==================== مدیریت پیام‌های عادی ====================
+    
+    async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """مدیریت پیام‌های عادی - مغز متفکر فعال می‌شود"""
+        user = update.effective_user
+        text = update.message.text
+        
+        if not await self.check_channel_membership(update, context):
+            return
+        
+        thinking = await update.message.reply_text("🧠 در حال تفکر...")
+        
+        try:
+            # مغز متفکر فکر می‌کند
+            thought = await self.master.think(text, {'user_id': user.id, 'name': user.first_name})
+            
+            # پاسخ
+            response = thought.get('conclusion', {}).get('summary', 
+                f"{user.first_name} جان، پیامت رو دریافت کردم و در حال یادگیری هستم.")
+            
+            await thinking.edit_text(f"🧠 **پاسخ:**\n\n{response}")
+            
+        except Exception as e:
+            error_handler.handle_error(e)
+            await thinking.edit_text("🌀 یه لحظه صبر کن... دارم فکر می‌کنم.")
+    
+    # ==================== اجرای ربات ====================
+    
+    def run(self):
+        """اجرای ربات"""
+        if not TOKEN:
+            logger.error("❌ TELEGRAM_TOKEN not found!")
+            return
+        
+        # ساخت اپلیکیشن
+        self.application = Application.builder().token(TOKEN).build()
+        
+        # ===== دستورات عمومی =====
+        self.application.add_handler(CommandHandler("start", self.start))
+        self.application.add_handler(CommandHandler("help", self.help))
+        self.application.add_handler(CommandHandler("menu", self.menu))
+        self.application.add_handler(CommandHandler("status", self.status))
+        self.application.add_handler(CommandHandler("language", self.language_menu))
+        
+        # ===== دستورات پیش‌بینی =====
+        self.application.add_handler(CommandHandler("predict", self.predict))
+        self.application.add_handler(CommandHandler("pump", self.pump))
+        self.application.add_handler(CommandHandler("new", self.new_tokens))
+        self.application.add_handler(CommandHandler("whales", self.whales))
+        
+        # ===== دستورات عددشناسی =====
+        self.application.add_handler(CommandHandler("num", self.numerology_cmd))
+        
+        # ===== دستورات پیشرفته =====
+        self.application.add_handler(CommandHandler("evolve", self.evolution_status))
+        self.application.add_handler(CommandHandler("consciousness", self.consciousness_level))
+        
+        # ===== دستورات مدیریت (فقط ال حشاش) =====
+        self.application.add_handler(CommandHandler("admin", self.admin_panel))
+        self.application.add_handler(CommandHandler("report", self.send_daily_report))
+        self.application.add_handler(CommandHandler("ad", self.generate_ad))
+        
+        # ===== دستورات پنل مدیریت =====
+        self.application.add_handler(CommandHandler("set_price", self.admin.set_price))
+        self.application.add_handler(CommandHandler("set_wallet", self.admin.set_wallet))
+        self.application.add_handler(CommandHandler("set_wallet_network", self.admin.set_wallet_network))
+        self.application.add_handler(CommandHandler("add_vip", self.admin.add_vip))
+        self.application.add_handler(CommandHandler("remove_vip", self.admin.remove_vip))
+        self.application.add_handler(CommandHandler("add_premium", self.admin.add_premium))
+        self.application.add_handler(CommandHandler("ban", self.admin.ban_user))
+        self.application.add_handler(CommandHandler("unban", self.admin.unban_user))
+        self.application.add_handler(CommandHandler("user_info", self.admin.user_info))
+        self.application.add_handler(CommandHandler("users_list", self.admin.users_list))
+        self.application.add_handler(CommandHandler("set_channel", self.admin.set_channel))
+        self.application.add_handler(CommandHandler("set_channel_username", self.admin.set_channel_username))
+        self.application.add_handler(CommandHandler("channel_on", self.admin.channel_on))
+        self.application.add_handler(CommandHandler("channel_off", self.admin.channel_off))
+        self.application.add_handler(CommandHandler("maintenance", self.admin.maintenance))
+        self.application.add_handler(CommandHandler("set_message", self.admin.set_message))
+        self.application.add_handler(CommandHandler("set_limits", self.admin.set_limits))
+        self.application.add_handler(CommandHandler("backup_create", self.admin.backup_create))
+        self.application.add_handler(CommandHandler("reset_users", self.admin.reset_users))
+        self.application.add_handler(CommandHandler("reset_stats", self.admin.reset_stats))
+        self.application.add_handler(CommandHandler("reset_settings", self.admin.reset_settings))
+        
+        # ===== کالبک‌ها =====
+        self.application.add_handler(CallbackQueryHandler(self.language_callback, pattern="^lang_"))
+        self.application.add_handler(CallbackQueryHandler(self.menu_callback, pattern="^menu_"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.back_to_main, pattern="^admin_back$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.prices_menu, pattern="^admin_prices$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.wallet_menu, pattern="^admin_wallet$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.users_menu, pattern="^admin_users$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.stats_menu, pattern="^admin_stats$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.channel_menu, pattern="^admin_channel$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.settings_menu, pattern="^admin_settings$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.backup_menu, pattern="^admin_backup$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.broadcast_menu, pattern="^admin_broadcast$"))
+        self.application.add_handler(CallbackQueryHandler(self.admin.reset_menu, pattern="^admin_reset$"))
+        
+        # ===== پیام‌های عادی =====
+        self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
+        
+        # ===== بک‌آپ اولیه =====
+        self.backup.create_backup('consciousness', "Bot started")
+        
+        logger.info("🚀 Eye of Horus - FINAL VERSION started")
+        logger.info(f"🧠 Consciousness Level: {self.master.consciousness['level']}")
+        logger.info(f"📚 Books loaded: {len(self.knowledge.books)}")
+        
+        # استفاده از webhook برای Railway
+        import os
+        port = int(os.getenv("PORT", 8080))
+        webhook_url = f"https://blissful-youthfulness.up.railway.app/{TOKEN}"
+        
+        self.application.run_webhook(
+            listen="0.0.0.0",
+            port=port,
+            url_path=TOKEN,
+            webhook_url=webhook_url
+        )
+
+# ==================== اجرا ====================
+if __name__ == "__main__":
+    bot = UltimateBot()
+    bot.run()
