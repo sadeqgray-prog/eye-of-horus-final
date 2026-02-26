@@ -1,19 +1,32 @@
 #!/usr/bin/env python3
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+import os
+import time
+from telegram import Bot
 
 logging.basicConfig(level=logging.INFO)
-TOKEN = "8762873121:AAEnSClZaYQETAmJxQk6RNQo4Uauo2dSw-4"
+logger = logging.getLogger('simple')
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ ربات کار می‌کنه!")
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
+if not TOKEN:
+    logger.error("❌ TELEGRAM_TOKEN not set")
+    exit(1)
 
-def main():
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    print("🚀 ربات ساده شروع به کار کرد...")
-    app.run_polling()
+logger.info("✅ Simple test bot started")
+logger.info(f"🤖 Bot token: {TOKEN[:10]}...")
 
-if __name__ == "__main__":
-    main()
+# فقط یه بار یه پیام تست بده
+import asyncio
+import telegram
+
+async def test():
+    bot = telegram.Bot(TOKEN)
+    me = await bot.get_me()
+    logger.info(f"✅ Bot connected: @{me.username}")
+
+asyncio.run(test())
+
+# نگه داشتن
+while True:
+    logger.info("💓 Heartbeat...")
+    time.sleep(60)
