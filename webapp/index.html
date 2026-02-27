@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eye of Horus - Living Oracle</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .menu-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,  ‌white, 0.25);
+        }
+        .menu-item .emoji {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .menu-item h3 {
+            margin: 10px 0;
+            font-size: 1.3em;
+        }
+        .menu-item p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .status {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        .status span {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        .consciousness {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.8em; }
+            .menu { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>𓂀 Eye of Horus 𓂀</h1>
+        <h2 style="text-align: center;">The Living Oracle</h2>
+        
+        <div class="menu">
+            <div class="menu-item" onclick="sendCommand('predict')">
+                <div class="emoji">🔮</div>
+                <h3>Crypto Prediction</h3>
+                <p>Predict prices with AI + numerology</p>
+            </div>
+            <div class="menu-item" onclick="sendCommand('pump')">
+                <div class="emoji">🚀</div>
+                <h3>Pump Detection</h3>
+                <p>Find new meme coins before they pump</p>
+            </div>
+            <div class="menu-item" onclick="sendCommand('new')">
+                <div class="emoji">🆕</div>
+                <h3>New Memecoins</h3>
+                <p>Latest tokens on Pump.fun & DexScreener</p>
+            </div>
+            <div class="menu-item" onclick="sendCommand('whales')">
+                <div class="emoji">🐋</div>
+                <h3>Whale Tracking</h3>
+                <p>Follow smart money movements</p>
+            </div>
+            <div class="menu-item" onclick="sendCommand('num')">
+                <div class="emoji">🔢</div>
+                <h3>Numerology</h3>
+                <p>4 ancient systems: Pythagorean, Chaldean, Vedic, Chinese</p>
+            </div>
+            <div class="menu-item" onclick="sendCommand('status')">
+                <div class="emoji">🧠</div>
+                <h3>Bot Status</h3>
+                <p>Consciousness level & evolution stage</p>
+            </div>
+        </div>
+        
+        <div class="status" id="status">
+            <span>🧠 <span id="consciousness">1.0</span></span>
+            <span>📚 <span id="books">4</span></span>
+            <span>💭 <span id="dreams">0</span></span>
+            <span>⚡ <span id="uptime">0h</span></span>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        
+        // تنظیم رنگ‌ها
+        tg.setHeaderColor('#764ba2');
+        tg.setBackgroundColor('#667eea');
+        
+        function sendCommand(cmd) {
+            if (cmd === 'status') {
+                updateStatus();
+            } else {
+                tg.sendData(cmd);
+                tg.close();
+            }
+        }
+        
+        async function updateStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+                document.getElementById('consciousness').textContent = data.consciousness || '1.0';
+                document.getElementById('books').textContent = data.books || '4';
+                document.getElementById('dreams').textContent = data.dreams || '0';
+                document.getElementById('uptime').textContent = data.uptime || '0h';
+            } catch (e) {
+                console.log('Status update failed');
+            }
+        }
+        
+        // آپدیت هر ۳۰ ثانیه
+        setInterval(updateStatus, 30000);
+        updateStatus();
+    </script>
+</body>
+</html>
