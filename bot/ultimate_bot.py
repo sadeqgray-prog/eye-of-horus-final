@@ -1,35 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""Ultimate Bot - Simple Version"""
-
 import logging
-import os
-from telegram.ext import Application, CommandHandler
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+TOKEN = "8762873121:AAEnSClZaYQETAmJxQk6RNQo4Uauo2dSw-4"
 
-class UltimateBot:
-    """کلاس اصلی ربات - نسخه ساده شده"""
-    
-    def __init__(self):
-        self.name = "UltimateBot"
-        self.token = os.environ.get('TELEGRAM_TOKEN')
-        if not self.token:
-            logger.error("❌ TELEGRAM_TOKEN not set!")
-            raise ValueError("TELEGRAM_TOKEN not set")
-        logger.info("✅ UltimateBot initialized")
-    
-    async def start_command(self, update, context):
-        """دستور /start"""
-        await update.message.reply_text("🚀 Eye of Horus is alive! simple version")
-    
-    def run(self):
-        """اجرای ربات"""
-        logger.info("🚀 Starting bot...")
-        
-        app = Application.builder().token(self.token).build()
-        app.add_handler(CommandHandler("start", self.start_command))
-        
-        logger.info("✅ Bot is running")
-        app.run_polling()
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("✅ ربات کار می‌کنه!")
+
+def main():
+    app = Application.builder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    print("🚀 ربات ساده شروع به کار کرد...")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
